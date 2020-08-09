@@ -50,4 +50,43 @@ app.post("/create", (req, res) => {
     });
 });
 
+app.post("/delete", (req, res) => {
+  Employee.findByIdAndRemove(req.body.id)
+    .then((data) => {
+      console.log(data);
+      res.send("deleted");
+    })
+    .catch((error) => {
+      console.log(error);
+    });
+});
+
+app.post("/update", (req, res) => {
+  Employee.findByIdAndUpdate(req.body.id, {
+    name: req.body.name,
+    email: req.body.email,
+    phone: req.body.phone,
+    salary: req.body.salary,
+    position: req.body.position,
+    picture: req.body.picture,
+  })
+    .then((data) => {
+      console.log(data);
+      res.send("updated successful");
+    })
+    .catch((error) => {
+      console.log(error);
+    });
+});
+
+app.get("/findAll", (req, res) => {
+  Employee.find()
+    .then((data) => {
+      res.send(data);
+    })
+    .catch((error) => {
+      console.log(error);
+    });
+});
+
 app.listen("3000", () => console.log("server running"));
