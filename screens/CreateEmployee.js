@@ -1,16 +1,54 @@
 import React, { useState } from "react";
-import { View, Text, StyleSheet, Modal, Alert } from "react-native";
+import {
+  View,
+  Text,
+  StyleSheet,
+  Modal,
+  Alert,
+  KeyboardAvoidingView,
+} from "react-native";
 import { TextInput, Button } from "react-native-paper";
 import * as ImagePicker from "expo-image-picker";
 import * as Permissions from "expo-permissions";
 
-const CreateEmployee = () => {
+const CreateEmployee = ({ navigation }) => {
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
   const [email, setEmail] = useState("");
   const [salary, setSalary] = useState("");
+  const [position, setPosition] = useState("");
   const [picture, setPicture] = useState("");
   const [modal, setModal] = useState(false);
+
+  const submitData = () => {
+    console.log(picture);
+    fetch("http://10.0.2.2:3000/create", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        name,
+        phone,
+        email,
+        salary,
+        position,
+        picture,
+      }),
+    })
+      .then((res) => {
+        res.json();
+      })
+      .then((data) => {
+        Alert.alert(`${data.name} was saved successfully`);
+        setName("");
+        setPhone("");
+        setEmail("");
+        setSalary("");
+        setPosition("");
+        navigation.navigate("Home");
+      });
+  };
 
   const imagePickerHandler = async () => {
     const { granted } = await Permissions.askAsync(Permissions.CAMERA_ROLL);
@@ -65,12 +103,11 @@ const CreateEmployee = () => {
     data.append("cloud_name", "chinedu007");
 
     fetch("https://api.cloudinary.com/v1_1/chinedu007/image/upload", {
-      method: "post",
+      method: "POST",
       body: data,
     })
-      .then((res) => res.json)
+      .then((res) => res.json())
       .then((data) => {
-        console.log(data);
         setPicture(data.url);
         setModal(false);
       });
@@ -113,6 +150,15 @@ const CreateEmployee = () => {
         onChangeText={(text) => setSalary(text)}
       />
 
+      <TextInput
+        style={styles.input}
+        label="Position"
+        mode="outlined"
+        theme={theme}
+        value={position}
+        onChangeText={(text) => setPosition(text)}
+      />
+
       <Button
         style={styles.button}
         theme={theme}
@@ -127,7 +173,7 @@ const CreateEmployee = () => {
         theme={theme}
         icon="content-save"
         mode="contained"
-        onPress={() => console.log("saved")}
+        onPress={() => submitData()}
       >
         Save
       </Button>

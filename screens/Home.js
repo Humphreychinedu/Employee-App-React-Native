@@ -1,50 +1,31 @@
-import React from "react";
-import { View, Text, StyleSheet, Image, FlatList } from "react-native";
+import React, { useEffect, useState } from "react";
+import {
+  View,
+  Text,
+  StyleSheet,
+  Image,
+  FlatList,
+  ActivityIndicator,
+} from "react-native";
 import { Card, FAB } from "react-native-paper";
 
 const Home = (props) => {
-  const data = [
-    {
-      id: "1",
-      name: "chinedu",
-      email: "chinedu.mefendja@gmail",
-      salary: "$400",
-      phone: "08099446354",
-      position: "engineer",
-      picture:
-        "https://images.unsplash.com/flagged/photo-1578848151039-b8916d7c1c34?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=821&q=80",
-    },
-    {
-      id: "2",
-      name: "chinedu",
-      email: "chinedu.mefendja@gmail",
-      salary: "$400",
-      phone: "08099446354",
-      position: "engineer",
-      picture:
-        "https://images.unsplash.com/flagged/photo-1578848151039-b8916d7c1c34?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=821&q=80",
-    },
-    {
-      id: "3",
-      name: "chinedu",
-      email: "chinedu.mefendja@gmail",
-      salary: "$400",
-      phone: "08099446354",
-      position: "engineer",
-      picture:
-        "https://images.unsplash.com/flagged/photo-1578848151039-b8916d7c1c34?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=821&q=80",
-    },
-    {
-      id: "4",
-      name: "chinedu",
-      email: "chinedu.mefendja@gmail",
-      salary: "$400",
-      phone: "08099446354",
-      position: "engineer",
-      picture:
-        "https://images.unsplash.com/flagged/photo-1578848151039-b8916d7c1c34?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=821&q=80",
-    },
-  ];
+  const [data, setData] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetch("http://10.0.2.2:3000/findAll", {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        setData(data);
+        setLoading(false);
+      });
+  }, []);
 
   const renderList = (item) => {
     return (
@@ -72,14 +53,18 @@ const Home = (props) => {
 
   return (
     <View style={styles.container}>
-      <FlatList
-        data={data}
-        renderItem={({ item, index }) => {
-          return renderList(item);
-        }}
-        // keyExtractor={(item, index) => item.id}
-        keyExtractor={(item) => item.id}
-      />
+      {loading ? (
+        <ActivityIndicator size="large" color="#00ff00" />
+      ) : (
+        <FlatList
+          data={data}
+          renderItem={({ item, index }) => {
+            return renderList(item);
+          }}
+          // keyExtractor={(item, index) => item.id}
+          keyExtractor={(item) => item._id}
+        />
+      )}
       <FAB
         style={styles.fab}
         small={false}

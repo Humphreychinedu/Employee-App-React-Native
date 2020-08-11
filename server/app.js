@@ -43,7 +43,7 @@ app.post("/create", (req, res) => {
     .save()
     .then((data) => {
       console.log(data);
-      res.send("Success");
+      res.send(successResponse);
     })
     .catch((error) => {
       console.log(error);
@@ -54,7 +54,7 @@ app.post("/delete", (req, res) => {
   Employee.findByIdAndRemove(req.body.id)
     .then((data) => {
       console.log(data);
-      res.send("deleted");
+      res.send(successResponse);
     })
     .catch((error) => {
       console.log(error);
@@ -72,7 +72,7 @@ app.post("/update", (req, res) => {
   })
     .then((data) => {
       console.log(data);
-      res.send("updated successful");
+      res.send(successResponse);
     })
     .catch((error) => {
       console.log(error);
@@ -88,5 +88,10 @@ app.get("/findAll", (req, res) => {
       console.log(error);
     });
 });
+
+const successResponse = {
+  responseCode: "00",
+  responseMessage: "Successful",
+};
 
 app.listen("3000", () => console.log("server running"));
