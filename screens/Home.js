@@ -1,19 +1,12 @@
 import React, { useEffect, useState } from "react";
-import {
-  View,
-  Text,
-  StyleSheet,
-  Image,
-  FlatList,
-  ActivityIndicator,
-} from "react-native";
+import { View, Text, StyleSheet, Image, FlatList, Alert } from "react-native";
 import { Card, FAB } from "react-native-paper";
 
-const Home = (props) => {
+const Home = ({ navigation }) => {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
+  const fetchData = () => {
     fetch("http://10.0.2.2:3000/findAll", {
       method: "GET",
       headers: {
@@ -24,7 +17,14 @@ const Home = (props) => {
       .then((data) => {
         setData(data);
         setLoading(false);
+      })
+      .catch((error) => {
+        Alert.alert("We are unable to process your request at this time");
       });
+  };
+
+  useEffect(() => {
+    fetchData();
   }, []);
 
   const renderList = (item) => {
@@ -32,7 +32,7 @@ const Home = (props) => {
       <Card
         style={styles.myCard}
         onPress={() => {
-          props.navigation.navigate("Profile", { item });
+          navigation.navigate("Profile", { item });
         }}
       >
         <View style={styles.detailContainer}>
@@ -53,24 +53,24 @@ const Home = (props) => {
 
   return (
     <View style={styles.container}>
-      {loading ? (
-        <ActivityIndicator size="large" color="#00ff00" />
-      ) : (
-        <FlatList
-          data={data}
-          renderItem={({ item, index }) => {
-            return renderList(item);
-          }}
-          // keyExtractor={(item, index) => item.id}
-          keyExtractor={(item) => item._id}
-        />
-      )}
+      <FlatList
+        data={data}
+        renderItem={({ item, index }) => {
+          return renderList(item);
+        }}
+        // keyExtractor={(item, index) => item.id}
+        keyExtractor={(item) => item._id}
+        onRefresh={() => {
+          fetchData();
+        }}
+        refreshing={loading}
+      />
       <FAB
         style={styles.fab}
         small={false}
         icon="plus"
         theme={{ colors: { accent: "#006aff" } }}
-        onPress={() => props.navigation.navigate("Create")}
+        onPress={() => navigation.navigate("Create")}
       />
     </View>
   );

@@ -54,7 +54,7 @@ app.post("/delete", (req, res) => {
   Employee.findByIdAndRemove(req.body.id)
     .then((data) => {
       console.log(data);
-      res.send(successResponse);
+      res.send(data);
     })
     .catch((error) => {
       console.log(error);
@@ -72,7 +72,7 @@ app.post("/update", (req, res) => {
   })
     .then((data) => {
       console.log(data);
-      res.send(successResponse);
+      res.send(data);
     })
     .catch((error) => {
       console.log(error);

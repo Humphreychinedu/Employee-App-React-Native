@@ -1,5 +1,13 @@
 import React, { useState } from "react";
-import { View, Text, StyleSheet, Image, Linking, Platform } from "react-native";
+import {
+  View,
+  Text,
+  StyleSheet,
+  Image,
+  Linking,
+  Platform,
+  Alert,
+} from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import { Title, Card, Button } from "react-native-paper";
 import { MaterialIcons, Entypo } from "@expo/vector-icons";
@@ -17,10 +25,31 @@ const Profile = (props) => {
 
   const openDial = () => {
     if (Platform.OS === "android") {
-      Linking.openURL("tel:08099446354");
+      Linking.openURL(`tel:${phone}`);
     } else {
-      Linking.openURL("telprompt:08099446354");
+      Linking.openURL(`telprompt:${phone}`);
     }
+  };
+
+  deleteEmployee = () => {
+    console.log(_id);
+    fetch("http://10.0.2.2:3000/delete", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        id: _id,
+      }),
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        Alert.alert(`${data.name} deleted`);
+        props.navigation.navigate("Home");
+      })
+      .catch((error) => {
+        Alert.alert("We are unable to process your request at this time");
+      });
   };
 
   return (
@@ -44,7 +73,7 @@ const Profile = (props) => {
       <Card
         style={styles.myCard}
         onPress={() => {
-          Linking.openURL("mailto:email@example.com");
+          Linking.openURL(`mailto:${email}`);
         }}
       >
         <View style={styles.cardContent}>
@@ -75,7 +104,17 @@ const Profile = (props) => {
           theme={theme}
           icon="account-edit"
           mode="contained"
-          onPress={() => console.log("pressd")}
+          onPress={() => {
+            props.navigation.navigate("Create", {
+              _id,
+              name,
+              email,
+              phone,
+              salary,
+              position,
+              picture,
+            });
+          }}
         >
           Edit
         </Button>
@@ -84,7 +123,7 @@ const Profile = (props) => {
           theme={theme}
           icon="delete"
           mode="contained"
-          onPress={() => console.log("pressed")}
+          onPress={() => deleteEmployee()}
         >
           Delete
         </Button>
