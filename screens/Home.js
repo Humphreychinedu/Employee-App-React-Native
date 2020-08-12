@@ -1,10 +1,16 @@
 import React, { useEffect, useState } from "react";
 import { View, Text, StyleSheet, Image, FlatList, Alert } from "react-native";
 import { Card, FAB } from "react-native-paper";
+import { useSelector, useDispatch } from "react-redux";
 
 const Home = ({ navigation }) => {
-  const [data, setData] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const dispatch = useDispatch();
+
+  const { data, loading } = useSelector((state) => {
+    return state;
+  });
+  // const [data, setData] = useState([]);
+  // const [loading, setLoading] = useState(true);
 
   const fetchData = () => {
     fetch("http://10.0.2.2:3000/findAll", {
@@ -15,8 +21,10 @@ const Home = ({ navigation }) => {
     })
       .then((res) => res.json())
       .then((data) => {
-        setData(data);
-        setLoading(false);
+        dispatch({ type: "ADD_DATA", payload: data });
+        dispatch({ type: "SET_LOADING", payload: false });
+        // setData(data);
+        // setLoading(false);
       })
       .catch((error) => {
         Alert.alert("We are unable to process your request at this time");
